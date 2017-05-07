@@ -1,0 +1,22 @@
+{
+  "name": "ShapeShift_Test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "autobahn": "^17.5.1",
+    "bignumber.js": "^4.0.2",
+    "bluebird": "^3.5.0",
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "express-handlebars": "^3.0.0",
+    "node.bittrex.api": "^0.2.4",
+    "poloniex-api-node": "^1.0.2"
+  }
+}

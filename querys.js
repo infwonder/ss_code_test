@@ -57,21 +57,46 @@ module.exports =
     }
   },
 
-  update: function(callback)
+  updateAll: function(callback)
   {
     var m  = module.exports.markets.split(/,/);
+    var c  = module.exports.exchanges.split(/,/).length;
+    var iterator = Exchanges(module.exports.exchanges);
+    var r = iterator.next();
+    var output = {}; var i = 0;
+  
+    while(!r.done) {
+      module.exports.chkMarkets(r.value, m, (out) => 
+      {
+         Object.assign(output ,out);
+         var k = Object.keys(output);
+         if( k.length === c ) {
+           var redo = {};
+           m.map( (f) => {
+             redo[f] = {}
+             k.map( (h) => { Object.assign(redo[f], { [h]: output[h][f]['Ask']}) });
+             if (Object.keys(redo).length === m.length) callback(redo);
+           });
+         }
+      });
+      r = iterator.next();
+    }
+  },
+
+  update: function(market, callback)
+  {
     var c  = module.exports.exchanges.split(/,/).length;
     var iterator = Exchanges(module.exports.exchanges);
     var r = iterator.next();
     var output = {}; 
   
     while(!r.done) {
-      module.exports.chkMarkets(r.value, m, (out) => 
+      module.exports.chkMarkets(r.value, [market], (out) => 
       { 
          Object.assign(output ,out);
          if( Object.keys(output).length === c ) callback(output);
       });
       r = iterator.next();
     }
-  }  
+  }
 };
