@@ -1,6 +1,7 @@
 'use strcit';
 const bittrex = require('node.bittrex.api');
 const Poloniex = require('poloniex-api-node');
+var btce = require( __dirname + '/btc-e-pub.js');
 
 function* Exchanges(exchanges) {
   var e = exchanges.split(/,/);
@@ -12,6 +13,7 @@ module.exports =
 {
   bittrex: undefined,
   poloniex: undefined,
+  btce: undefined,
   exchanges: 'Poloniex,Bittrex',
   markets: 'BTC-DASH,BTC-LTC,BTC-ETH',
   init: false,
@@ -24,6 +26,7 @@ module.exports =
       module.exports.poloniex = new Poloniex(undefined, undefined);
       module.exports.bittrex = bittrex;
       module.exports.bittrex.options({'baseUrl': 'https://bittrex.com/api/v1.1'});
+      module.exports.btce = btce;
       module.exports.init = true;
       callback();
     } catch(err) {
@@ -54,6 +57,37 @@ module.exports =
           o[exchange][i]['Ask'] = data[j]['lowestAsk'];
           o[exchange][i]['Last'] = data[j]['last'];
           if (Object.keys(o[exchange]).length === markets.length) callback(null, o);
+        });
+      });
+    } else if (exchange === 'BTC-E'){
+      var emarkets = markets.map((i) => { var r = i.replace('DASH', 'DSH'); return r.toLowerCase().split('-').reverse().join('_'); });
+      var pairs    = emarkets.join('-');
+
+      //console.log("BTC-E: markets:" + emarkets + " ,pairs: " + pairs);
+
+      module.exports.btce.ticker(pairs, (err, data) => {
+        if (err) return callback(err, null);
+
+        //console.log("BTC-E: " + JSON.stringify(data));
+
+        markets.map((i) => {
+          var j = i.toLowerCase().split('-').reverse().join('_').replace('dash', 'dsh'); 
+          o[exchange][i] = {};
+          try {
+            o[exchange][i]['Bid'] = data[j]['buy'];
+            o[exchange][i]['Ask'] = data[j]['sell'];
+            o[exchange][i]['Last'] = data[j]['last'];
+          } catch(err) {
+            //console.log("In Error block: " + err);
+            o[exchange][i]['Bid'] = null;
+            o[exchange][i]['Ask'] = null;
+            o[exchange][i]['Last'] = null;
+          }
+         
+          if (Object.keys(o[exchange]).length === markets.length) {
+            //console.log(JSON.stringify(o,null,2));
+            callback(null, o);
+          }
         });
       });
     } else {
@@ -97,12 +131,13 @@ module.exports =
     module.exports.update(mktstr, (err, results) =>
     {
       if (err) return callback(err, null);
-      //console.log(JSON.stringify(results, null, 2));
       var output = {};
       Object.keys(results).map( (r) =>
       {
-        output[r] = results[r].sort(function(a,b) { return a[1] - b[1]});
-        if( Object.keys(output).length == Object.keys(results).length) callback(null, output);
+        output[r] = results[r].sort(function(a,b) { return a[1] - b[1]; });
+        if( Object.keys(output).length == Object.keys(results).length) {
+          callback(null, output);
+        }
       });
     });
   }

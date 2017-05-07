@@ -5,7 +5,8 @@
   <th>Best Choice</th>
   <th>Poloniex &nbsp (BTC)</th>
   <th>Bittrex &nbsp (BTC)</th>
-  <th>Margin (BTC)</th>
+  <th>BTC-E &nbsp (BTC)</th>
+  <th>Max Margin (BTC)</th>
  </tr>
 </thead>
 {{#list}}
@@ -14,6 +15,7 @@
    <td align="center">{{Best}}</td>
    <td align="right">{{Poloniex}}</td>
    <td align="right">{{Bittrex}}</td>
+   <td align="right">{{BTC-E}}</td>
    <td align="right">{{Diff}}</td>
   </tr>
 {{/list}} 

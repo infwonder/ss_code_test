@@ -3,8 +3,12 @@ var query = require( __dirname + '/querys.js');
 var prepare = Promise.promisify(query.prepare);
 var compare = Promise.promisify(query.compare);
 
-prepare('Poloniex,Bittrex', 'BTC-DASH,BTC-LTC,BTC-ETH').then( () => {
-  query.update((results) => 
+query.exchanges = 'Bittrex,Poloniex,BTC-E';
+var watching = 'BTC-LTC,BTC-ETH,BTC-DASH';
+query.markets = watching;
+
+prepare().then(() => {
+  query.update(watching, (results) => 
   {
     //console.log(JSON.stringify(results, null, 2));
 /*
@@ -15,11 +19,15 @@ prepare('Poloniex,Bittrex', 'BTC-DASH,BTC-LTC,BTC-ETH').then( () => {
       if( Object.keys(output).length == Object.keys(results).length) console.log(JSON.stringify(output, null, 1));
     }); 
 */
-    query.compare((output) => 
+    query.compare(watching, (err, output) => 
     {
+       console.log("HERE! " + JSON.stringify(output, null, 2));
        Object.keys(output).map((i) => 
        {
-          console.log("Market: " + i + ", Best choice: " + output[i][0][0] + ", Price: " + output[i][0][1] + ", Compared to: " + output[i][1][0] + ", Price: " + output[i][1][1]);
+          console.log("Market: " + i + ", Best choice: " 
+            + output[i][0][0] + ", Price: " + output[i][0][1] 
+            + ", Compared to: " + output[i][1][0] + ", Price: " + output[i][1][1]
+            + ", Compared to: " + output[i][2][0] + ", Price: " + output[i][2][1]);
        });
     });
 

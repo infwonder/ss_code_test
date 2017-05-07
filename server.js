@@ -27,6 +27,7 @@ var prepare = Promise.promisify(query.prepare);
 var update  = Promise.promisify(query.update);
 var compare = Promise.promisify(query.compare);
 var chkMarkets = Promise.promisify(query.chkMarkets);
+query.exchanges = 'Bittrex,Poloniex,BTC-E';
 
 app.get('/', function(request, response, next)
 {
@@ -34,7 +35,7 @@ app.get('/', function(request, response, next)
   var totalbtc = 20;  
 
   prepare().then(() => {
-   // chkMarkets('Bittrex', ['BTC-SJCX','ETH-GNT']).then((results) => { console.log(JSON.stringify(results, null, 2)) });
+    //chkMarkets('BTC-E', ['BTC-LTC','BTC-ETH']).then((results) => { console.log(JSON.stringify(results, null, 2)) });
   
     update(watching).then((results) => {
       compare(watching).then((output) => {
@@ -44,14 +45,16 @@ app.get('/', function(request, response, next)
         var d = new bn(g.length);
         var f = c.dividedBy(d);
         g.map((i) => {
-           var a = new bn(output[i][1][1]);
-           var b = new bn(output[i][0][1]);
+           var good = output[i].find((w) => { return w[1] != null; }); console.log(i + ": " + good);
+           var b = new bn(good[1]);
+           var e = new bn(output[i][2][1]);
            o.push({ 
                     "Market": i, 
-                    "Best" : output[i][0][0], 
+                    "Best" : good[0], 
                     [output[i][0][0]]: output[i][0][1], 
                     [output[i][1][0]]: output[i][1][1], 
-                    "Diff": (a.minus(b)).times(f).toFixed(8)
+                    [output[i][2][0]]: output[i][2][1], 
+                    "Diff": (e.minus(b)).times(f).toFixed(8)
                   });
         });
 
