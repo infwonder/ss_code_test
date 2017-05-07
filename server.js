@@ -1,6 +1,7 @@
 const Promise = require('bluebird');
 const express = require('express');
 const http = require("http");
+const bn   = require("bignumber.js");
 
 var bodyParser = require('body-parser');
 var handlebars = require("express-handlebars")
@@ -29,23 +30,28 @@ var chkMarkets = Promise.promisify(query.chkMarkets);
 
 app.get('/', function(request, response, next)
 {
-  var watching = 'BTC-DASH,BTC-LTC,BTC-ETH,BTC-SJCX,BTC-GNT';
-  
+  var watching = 'BTC-DASH,BTC-LTC,BTC-ETH';
+  var totalbtc = 20;  
+
   prepare().then(() => {
    // chkMarkets('Bittrex', ['BTC-SJCX','ETH-GNT']).then((results) => { console.log(JSON.stringify(results, null, 2)) });
   
     update(watching).then((results) => {
       compare(watching).then((output) => {
         var o = [];
-        Object.keys(output).map((i) => {
-/*
-           console.log("Market: " + i + ", Best choice: " + 
-                        output[i][0][0] + ", Price: " + 
-                        output[i][0][1] + ", Compared to: " + 
-                        output[i][1][0] + ", Price: " + 
-                        output[i][1][1]);
-*/
-           o.push({ "Market": i, 'Best' : output[i][0][0], [output[i][0][0]]: output[i][0][1], [output[i][1][0]]: output[i][1][1] });
+        var g = Object.keys(output);
+        var c = new bn(totalbtc);
+        var d = new bn(g.length);
+        g.map((i) => {
+           var a = new bn(output[i][1][1]);
+           var b = new bn(output[i][0][1]);
+           o.push({ 
+                    "Market": i, 
+                    "Best" : output[i][0][0], 
+                    [output[i][0][0]]: output[i][0][1], 
+                    [output[i][1][0]]: output[i][1][1], 
+                    "Diff": (a.minus(b)).times(c.dividedBy(d)).toFixed(8)
+                  });
         });
 
         return o;
@@ -53,7 +59,6 @@ app.get('/', function(request, response, next)
       .then((o) => 
       {
          response.render('answer', {list: o});
-         console.log(o);
       }).catch((err) => { next(err);});
     }).catch((err) => { next(err);});
   }).catch((err) => { next(err);});
