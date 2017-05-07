@@ -73,8 +73,8 @@ module.exports =
          if( k.length === c ) {
            var redo = {};
            m.map( (f) => {
-             redo[f] = {}
-             k.map( (h) => { Object.assign(redo[f], { [h]: output[h][f]['Ask']}) });
+             redo[f] = []
+             k.map( (h) => { redo[f].push( [h, output[h][f]['Ask']] ) });
              if (Object.keys(redo).length === m.length) callback(redo);
            });
          }
