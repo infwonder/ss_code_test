@@ -1,0 +1,24 @@
+<table border="1">
+<thead>
+ <tr>
+  <th>Market</th>
+  <th>Best Choice</th>
+  <th>Poloniex &nbsp (BTC)</th>
+  <th>Bittrex &nbsp (BTC)</th>
+ </tr>
+</thead>
+{{#list}}
+  <tr>
+   <td align="center">{{Market}}</td>
+   <td align="center">{{Best}}</td>
+   <td align="right">{{Poloniex}}</td>
+   <td align="right">{{Bittrex}}</td>
+  </tr>
+{{/list}} 
+</table>
+
+<script>
+setTimeout(function(){
+   window.location.reload(1);
+}, 8000);
+</script>
