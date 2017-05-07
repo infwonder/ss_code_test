@@ -10,7 +10,7 @@ prepare('Poloniex,Bittrex', 'BTC-DASH,BTC-LTC,BTC-ETH').then( () => {
     Object.keys(results).map( (r) => 
     {
       output[r] = results[r].sort(function(a,b) { return a[1] - b[1]});
-      if( Object.keys(output).length == Object.keys(results).length) console.log(JSON.stringify(output, null, 2));
+      if( Object.keys(output).length == Object.keys(results).length) console.log(JSON.stringify(output, null, 0));
     }); 
 
   });
