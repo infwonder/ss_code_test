@@ -42,6 +42,7 @@ app.get('/', function(request, response, next)
         var g = Object.keys(output);
         var c = new bn(totalbtc);
         var d = new bn(g.length);
+        var f = c.dividedBy(d);
         g.map((i) => {
            var a = new bn(output[i][1][1]);
            var b = new bn(output[i][0][1]);
@@ -50,7 +51,7 @@ app.get('/', function(request, response, next)
                     "Best" : output[i][0][0], 
                     [output[i][0][0]]: output[i][0][1], 
                     [output[i][1][0]]: output[i][1][1], 
-                    "Diff": (a.minus(b)).times(c.dividedBy(d)).toFixed(8)
+                    "Diff": (a.minus(b)).times(f).toFixed(8)
                   });
         });
 
