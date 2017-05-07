@@ -14,15 +14,19 @@ module.exports =
   poloniex: undefined,
   exchanges: undefined,
   markets: undefined,
+  init: false,
 
   prepare: function(exstr, mktstr, callback) 
   {
+    if (module.exports.init) return callback();
+
     try {
       module.exports.poloniex = new Poloniex(undefined, undefined);
       module.exports.bittrex = bittrex;
       module.exports.bittrex.options({'baseUrl': 'https://bittrex.com/api/v1.1'});
       module.exports.exchanges = exstr || 'Poloniex,Bittrex';
       module.exports.markets   = mktstr || 'BTC-DASH,BTC-LTC,BTC-ETH';
+      module.exports.init = true;
       callback();
     } catch(err) {
       callback(err);
@@ -57,7 +61,7 @@ module.exports =
     }
   },
 
-  updateAll: function(callback)
+  update: function(callback)
   {
     var m  = module.exports.markets.split(/,/);
     var c  = module.exports.exchanges.split(/,/).length;
@@ -83,6 +87,7 @@ module.exports =
     }
   },
 
+/*
   update: function(market, callback)
   {
     var c  = module.exports.exchanges.split(/,/).length;
@@ -98,5 +103,20 @@ module.exports =
       });
       r = iterator.next();
     }
+  },
+*/
+
+  compare: function(callback)
+  {
+    module.exports.update((results) =>
+    {
+      //console.log(JSON.stringify(results, null, 2));
+      var output = {};
+      Object.keys(results).map( (r) =>
+      {
+        output[r] = results[r].sort(function(a,b) { return a[1] - b[1]});
+        if( Object.keys(output).length == Object.keys(results).length) callback(output);
+      });
+    });
   }
 };
